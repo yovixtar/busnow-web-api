@@ -8,6 +8,7 @@ use CodeIgniter\Debug\Toolbar\Collectors\Views;
 class Home extends BaseController
 {
     use ResponseTrait;
+    public $sessionDriver            = 'CodeIgniter\Session\Handlers\FileHandler';
 
     public function index() : \CodeIgniter\HTTP\Response
     {
@@ -17,6 +18,11 @@ class Home extends BaseController
 
     public function homePage()
     {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('/login');
+        }
+
         return view('home/index');
     }
 }

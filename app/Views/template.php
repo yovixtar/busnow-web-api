@@ -15,6 +15,7 @@
                 <li class="nav-item"><a class="nav-link" href="<?= base_url('tiket') ?>">Tiket</a></li>
                 <li class="nav-item"><a class="nav-link" href="<?= base_url('pesanan') ?>">Pesanan</a></li>
                 <li class="nav-item"><a class="nav-link" href="<?= base_url('user') ?>">Pengguna</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= base_url('logout') ?>">Logout</a></li>
             </ul>
         </div>
     </nav>

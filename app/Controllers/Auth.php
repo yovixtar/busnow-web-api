@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Helpers\JwtHelper;
 use App\Models\UserModel;
+use App\Models\AdminModel;
 use CodeIgniter\API\ResponseTrait;
 use Config\Token;
 use \Firebase\JWT\JWT;
@@ -12,7 +13,7 @@ use CodeIgniter\HTTP\Response;
 class Auth extends BaseController
 {
     use ResponseTrait;
-    protected $userModel;
+    protected $userModel, $adminModel;
 
     const HTTP_SERVER_ERROR = 500;
     const HTTP_BAD_REQUEST = 400;
@@ -21,9 +22,12 @@ class Auth extends BaseController
     const HTTP_SUCCESS = 200;
     const HTTP_SUCCESS_CREATE = 201;
 
+    public $sessionDriver            = 'CodeIgniter\Session\Handlers\FileHandler';
+
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->adminModel = new AdminModel();
     }
 
     public function login(): Response
@@ -131,12 +135,57 @@ class Auth extends BaseController
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {
             // Tangani kesalahan dan kirim respons error
-            $message = 'Terjadi kesalahan dalam proses penambahan pengguna.'.$th;
+            $message = 'Terjadi kesalahan dalam proses penambahan pengguna.' . $th;
             return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
         }
     }
 
-    public function getAllUsersWeb(){
+
+    // Web App
+
+    public function loginWeb()
+    {
+        return view('auth/login');
+    }
+
+    public function loginAccWeb()
+    {
+
+        $username = $this->request->getPost('username');
+        $password = $this->request->getPost('password');
+
+        // Validate input
+        if (empty($username) || empty($password)) {
+            return redirect()->to('/login');
+        }
+
+        $admin = $this->adminModel->where('username', $username)->first();
+
+        if (!$admin || (sha1($password) !== $admin['password'])) {
+            return redirect()->to('/login');
+        }
+
+        $session = session();
+        $session->set([
+            'username' => $admin['username'],
+            'isLoggedIn' => true
+        ]);
+
+        return redirect()->to('/home');
+    }
+
+    public function logoutWeb()
+    {
+        // Example using session:
+        $session = session();
+        $session->destroy();
+
+        // Redirect to login page
+        return redirect()->to('/login');
+    }
+
+    public function getAllUsersWeb()
+    {
         $pengguna = $this->userModel->findAll();
         return view('pengguna/index', ['pengguna' => $pengguna]);
     }

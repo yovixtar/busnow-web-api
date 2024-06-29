@@ -21,6 +21,10 @@ $routes->post('/api/pesan-tiket', 'Payment::buyTiket');
 
 
 // Web App
+$routes->get('/login', 'Auth::loginWeb');
+$routes->post('/auth/login', 'Auth::loginAccWeb');
+$routes->get('/logout', 'Auth::logoutWeb');
+
 $routes->get('/', 'Home::homePage');
 $routes->get('/home', 'Home::homePage');
 
