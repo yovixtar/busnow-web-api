@@ -30,7 +30,6 @@ class Payment extends BaseController
         $this->tiketModel = new TiketModel();
         $this->pesananModel = new PesananModel();
         $this->busModel = new BusModel();
-
     }
 
     public function getSaldo(): Response
@@ -55,7 +54,7 @@ class Payment extends BaseController
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => $message,
-                'saldo' => $saldoSekarang,
+                'data' => $saldoSekarang,
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {
@@ -90,19 +89,20 @@ class Payment extends BaseController
 
             $message = "Saldo berhasil ditambahkan";
             $data = [
-                'code' => self::HTTP_SUCCESS,
+                'code' => self::HTTP_SUCCESS_CREATE,
                 'message' => $message,
-                'saldo' => $saldoSekarang,
+                'data' => $saldoSekarang,
             ];
-            return $this->respond($data, self::HTTP_SUCCESS);
+            return $this->respond($data, self::HTTP_SUCCESS_CREATE);
         } catch (\Throwable $th) {
             $message = 'Terjadi kesalahan dalam proses add saldo: ' . $th->getMessage();
             return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
         }
     }
 
-    public function buyTiket(): Response {
-        
+    public function buyTiket(): Response
+    {
+
         try {
             $decoded = JwtHelper::decodeTokenFromRequest($this->request);
 
@@ -111,18 +111,18 @@ class Payment extends BaseController
             }
 
             $id_user = $decoded->id_user;
-            
+
             $user = $this->userModel->find($id_user);
             if (!$user) {
                 return $this->messageResponse('Pengguna tidak ditemukan', self::HTTP_NOT_FOUND);
             }
-            
+
             $id_tiket = $this->request->getPost('id_tiket');
             $metode_pembayaran = $this->request->getPost('metode_pembayaran');
             $nama = $this->request->getPost('nama');
             $kursi = $this->request->getPost('kursi');
-            
-            if (empty($id_tiket) || empty($metode_pembayaran) || empty($nama) || empty($kursi)){
+
+            if (empty($id_tiket) || empty($metode_pembayaran) || empty($nama) || empty($kursi)) {
                 return $this->messageResponse('Pemesanan tiket tidak valid', self::HTTP_BAD_REQUEST);
             }
 
@@ -165,27 +165,123 @@ class Payment extends BaseController
                 'waktu_pesan' => date('Y-m-d H:i:s'),
             ];
 
-            $message = "Saldo berhasil ditambahkan";
+            $message = "Berhasil membeli Tiket";
             $data = [
-                'code' => self::HTTP_SUCCESS,
+                'code' => self::HTTP_SUCCESS_CREATE,
                 'message' => $message,
-                'pesanan' => $dataReturn,
+                'data' => $dataReturn,
             ];
-            return $this->respond($data, self::HTTP_SUCCESS);
+            return $this->respond($data, self::HTTP_SUCCESS_CREATE);
         } catch (\Throwable $th) {
             $message = 'Terjadi kesalahan dalam proses beli tiket: ' . $th->getMessage();
             return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
         }
     }
 
+    public function getAllPesanan()
+    {
+        try {
+            $decoded = JwtHelper::decodeTokenFromRequest($this->request);
+
+            if (!$decoded) {
+                return $this->messageResponse('Token tidak valid', self::HTTP_UNAUTHORIZED);
+            }
+
+            $id_user = $decoded->id_user;
+
+            $user = $this->userModel->find($id_user);
+            if (!$user) {
+                return $this->messageResponse('Pengguna tidak ditemukan', self::HTTP_NOT_FOUND);
+            }
+
+            $pesanans = $this->pesananModel->where('id_user', $id_user)->findAll();
+
+            $dataReturn = [];
+
+            foreach ($pesanans as $pesanan) {
+                $tiket = $this->tiketModel->find($pesanan['id_tiket']);
+                if (!$tiket) {
+                    continue;
+                }
+
+                $bus = $this->busModel->find($tiket['id_bus']);
+                if (!$bus) {
+                    continue;
+                }
+
+                $keberangkatan = $bus['asal'] . ' ke ' . $bus['tujuan'];
+
+                $dataPesanan = [
+                    'nama' => $pesanan['nama'],
+                    'keberangkatan' => $keberangkatan,
+                    'kelas' => $tiket['kelas'],
+                    'tanggal' => $tiket['tanggal_berangkat'],
+                    'metode_pembayaran' => $pesanan['metode_pembayaran'],
+                    'total' => $pesanan['total'],
+                    'waktu_pesan' => $pesanan['waktu_pesan'],
+                ];
+
+                $dataReturn[] = $dataPesanan;
+            }
+
+            $message = "Berhasil mengambil Pesanan";
+            $data = [
+                'code' => self::HTTP_SUCCESS,
+                'message' => $message,
+                'data' => $dataReturn,
+            ];
+            return $this->respond($data, self::HTTP_SUCCESS);
+        } catch (\Throwable $th) {
+            $message = 'Terjadi kesalahan dalam proses pengambilan pesanan: ' . $th->getMessage();
+            return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
+        }
+    }
+
+    public function getETiket($id_pesanan)
+    {
+        try {
+            $pesanan = $this->pesananModel->find($id_pesanan);
+
+            $tiket = $this->tiketModel->find($pesanan['id_tiket']);
+            if (!$tiket) {
+                return $this->messageResponse('Tiket tidak ditemukan', self::HTTP_NOT_FOUND);
+            }
+
+            $bus = $this->busModel->find($tiket['id_bus']);
+            $keberangkatan = $bus['asal'] . ' ke ' . $bus['tujuan'];
+
+            $dataReturn = [
+                'nama' => $pesanan['nama'],
+                'keberangkatan' => $keberangkatan,
+                'kelas' => $tiket['kelas'],
+                'tanggal' => $tiket['tanggal_berangkat'],
+                'metode_pembayaran' => $pesanan['metode_pembayaran'],
+                'total' => $tiket['tarif'],
+                'waktu_pesan' => $pesanan['waktu_pesan'],
+            ];
+
+            $message = "Berhasil mengambil E-Tiket";
+            $data = [
+                'code' => self::HTTP_SUCCESS,
+                'message' => $message,
+                'data' => $dataReturn,
+            ];
+            return $this->respond($data, self::HTTP_SUCCESS);
+        } catch (\Throwable $th) {
+            $message = 'Terjadi kesalahan dalam proses pengambilan e-tiket: ' . $th->getMessage();
+            return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
+        }
+    }
+
 
     // Web App
-    public function getPesananWeb(){
+    public function getPesananWeb()
+    {
         $data = $this->pesananModel->select('id_pesanan, pesanan.nama, bus.nama as nama_bus, CONCAT(bus.asal, "-", bus.tujuan) as asal_tujuan, tiket.tanggal_berangkat, tiket.jam_berangkat, tiket.jam_sampai, tiket.kelas, pesanan.kursi, pesanan.total')
-        ->join('tiket', 'tiket.id_tiket = pesanan.id_tiket')
-        ->join('bus', 'bus.id_bus = tiket.id_bus')
-        ->findAll();
+            ->join('tiket', 'tiket.id_tiket = pesanan.id_tiket')
+            ->join('bus', 'bus.id_bus = tiket.id_bus')
+            ->findAll();
 
         return view('pesanan/index', ['pesanan' => $data]);
-    } 
+    }
 }

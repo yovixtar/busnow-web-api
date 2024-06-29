@@ -14,10 +14,12 @@ $routes->get('/api/saldo', 'Payment::getSaldo');
 $routes->post('/api/saldo', 'Payment::addSaldo');
 
 $routes->get('/api/bus', 'Bus::getAllBus');
-$routes->get('/api/tiket-by-bus/(:segment)', 'Tiket::GetTiketByIdBus/$1');
+$routes->get('/api/tiket-by-bus/(:num)', 'Tiket::GetTiketByIdBus/$1');
 $routes->get('/api/tiket-by-filter', 'Tiket::getTiketByFilter');
 
 $routes->post('/api/pesan-tiket', 'Payment::buyTiket');
+$routes->get('/api/pesanan', 'Payment::getAllPesanan');
+$routes->get('/api/pesanan/(:num)', 'Payment::getETiket/$1');
 
 
 // Web App

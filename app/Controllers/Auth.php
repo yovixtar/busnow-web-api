@@ -129,10 +129,10 @@ class Auth extends BaseController
             // Kirim respons berhasil menambahkan pengguna
             $message = "Berhasil mendaftar sebagai pengguna.";
             $data = [
-                'code' => self::HTTP_SUCCESS,
+                'code' => self::HTTP_SUCCESS_CREATE,
                 'message' => $message,
             ];
-            return $this->respond($data, self::HTTP_SUCCESS);
+            return $this->respond($data, self::HTTP_SUCCESS_CREATE);
         } catch (\Throwable $th) {
             // Tangani kesalahan dan kirim respons error
             $message = 'Terjadi kesalahan dalam proses penambahan pengguna.' . $th;

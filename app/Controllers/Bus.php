@@ -34,7 +34,7 @@ class Bus extends BaseController
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => 'Daftar bus berhasil diambil',
-                'buses' => $buses,
+                'data' => $buses,
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {

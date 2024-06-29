@@ -45,7 +45,7 @@ class Tiket extends BaseController
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => 'Daftar tiket berhasil diambil',
-                'tikets' => $tikets,
+                'data' => $tikets,
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {
@@ -88,7 +88,7 @@ class Tiket extends BaseController
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => 'Daftar tiket berhasil diambil',
-                'tikets' => $tikets,
+                'data' => $tikets,
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {
@@ -96,6 +96,7 @@ class Tiket extends BaseController
             return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
         }
     }
+
 
 
 
