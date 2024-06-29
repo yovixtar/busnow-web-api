@@ -178,4 +178,14 @@ class Payment extends BaseController
         }
     }
 
+
+    // Web App
+    public function getPesananWeb(){
+        $data = $this->pesananModel->select('id_pesanan, pesanan.nama, bus.nama as nama_bus, CONCAT(bus.asal, "-", bus.tujuan) as asal_tujuan, tiket.tanggal_berangkat, tiket.jam_berangkat, tiket.jam_sampai, tiket.kelas, pesanan.kursi, pesanan.total')
+        ->join('tiket', 'tiket.id_tiket = pesanan.id_tiket')
+        ->join('bus', 'bus.id_bus = tiket.id_bus')
+        ->findAll();
+
+        return view('pesanan/index', ['pesanan' => $data]);
+    } 
 }

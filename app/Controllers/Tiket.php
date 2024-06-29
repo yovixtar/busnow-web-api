@@ -96,4 +96,66 @@ class Tiket extends BaseController
             return $this->messageResponse($message, self::HTTP_SERVER_ERROR);
         }
     }
+
+
+
+    // Web App
+
+    public function indexWeb()
+    {
+        $tikets = $this->tiketModel->select('tiket.*, bus.nama as nama_bus, CONCAT(bus.asal, "-", bus.tujuan) as asal_tujuan')
+            ->join('bus', 'bus.id_bus = tiket.id_bus')
+            ->findAll();
+
+        return view('tiket/index', ['tikets' => $tikets]);
+    }
+
+    public function createWeb()
+    {
+        $buses = $this->busModel->findAll();
+
+        return view('tiket/create', ['bus' => $buses]);
+    }
+
+    public function storeWeb() {
+        $data = [
+            'id_bus' => $this->request->getPost('id_bus'),
+            'tanggal_berangkat' => $this->request->getPost('tanggal_berangkat'),
+            'jam_berangkat' => $this->request->getPost('jam_berangkat'),
+            'jam_sampai' => $this->request->getPost('jam_sampai'),
+            'kelas' => $this->request->getPost('kelas'),
+            'kursi' => $this->request->getPost('kursi'),
+            'tarif' => $this->request->getPost('tarif'),
+        ];
+
+        $this->tiketModel->save($data);
+        return redirect()->to('/tiket');
+    }
+
+    public function editWeb($id)
+    {
+        $tiket = $this->tiketModel->find($id);
+        $buses = $this->busModel->findAll();
+        
+        return view('tiket/update', ['tiket' => $tiket, 'bus' => $buses]);
+    }
+
+    public function updateWeb($id) {
+        $data = [
+            'jam_berangkat' => $this->request->getPost('jam_berangkat'),
+            'jam_sampai' => $this->request->getPost('jam_sampai'),
+            'kelas' => $this->request->getPost('kelas'),
+            'kursi' => $this->request->getPost('kursi'),
+            'tarif' => $this->request->getPost('tarif'),
+        ];
+
+        $this->tiketModel->update($id, $data);
+        return redirect()->to('/tiket');
+    }
+
+    public function deleteWeb($id)
+    {
+        $this->tiketModel->delete($id);
+        return redirect()->to('/tiket')->with('success', 'Ticket deleted successfully.');
+    }
 }
