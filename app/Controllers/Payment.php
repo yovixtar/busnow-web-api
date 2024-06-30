@@ -156,6 +156,7 @@ class Payment extends BaseController
             $keberangkatan = $bus['asal'] . ' ke ' . $bus['tujuan'];
 
             $dataReturn = [
+                'id_tiket' => $id_tiket,
                 'nama' => $nama,
                 'keberangkatan' => $keberangkatan,
                 'kelas' => $tiket['kelas'],
@@ -212,6 +213,7 @@ class Payment extends BaseController
                 $keberangkatan = $bus['asal'] . ' ke ' . $bus['tujuan'];
 
                 $dataPesanan = [
+                    'id_pesanan' => $pesanan['id_pesanan'],
                     'nama' => $pesanan['nama'],
                     'keberangkatan' => $keberangkatan,
                     'kelas' => $tiket['kelas'],

@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => 'catatan-bps',
+        'username'     => 'iyabosco_project',
+        'password'     => 'ykstar.123',
+        'database'     => 'iyabosco_busnow',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,

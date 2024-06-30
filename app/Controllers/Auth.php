@@ -75,7 +75,9 @@ class Auth extends BaseController
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => $message,
-                'token' => $token,
+                'data' => [
+                    'token' => $token,
+                ],
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {

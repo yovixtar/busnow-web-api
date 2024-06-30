@@ -38,14 +38,10 @@ class Tiket extends BaseController
                 ->where('tiket.id_bus', $id_bus)
                 ->findAll();
 
-            if (!$tikets) {
-                return $this->messageResponse('Tiket tidak ditemukan', self::HTTP_NOT_FOUND);
-            }
-
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => 'Daftar tiket berhasil diambil',
-                'data' => $tikets,
+                'data' => ($tikets) ? $tikets : [],
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {
@@ -81,14 +77,10 @@ class Tiket extends BaseController
 
             $tikets = $builder->get()->getResult();
 
-            if (!$tikets) {
-                return $this->messageResponse('Tiket tidak ditemukan', self::HTTP_NOT_FOUND);
-            }
-
             $data = [
                 'code' => self::HTTP_SUCCESS,
                 'message' => 'Daftar tiket berhasil diambil',
-                'data' => $tikets,
+                'data' => ($tikets) ? $tikets : [],
             ];
             return $this->respond($data, self::HTTP_SUCCESS);
         } catch (\Throwable $th) {
