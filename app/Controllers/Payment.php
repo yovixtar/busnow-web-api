@@ -138,7 +138,7 @@ class Payment extends BaseController
             $dataPesanan = [
                 'id_tiket' => $id_tiket,
                 'id_user' => $id_user,
-                'total' => $tiket['tarif'],
+                'total' => strval(intval($tiket['tarif']) * intval($kursi)),
                 'metode_pembayaran' => $metode_pembayaran,
                 'nama' => $nama,
                 'kursi' => $kursi,
@@ -146,7 +146,7 @@ class Payment extends BaseController
             ];
             $this->pesananModel->insert($dataPesanan);
 
-            $kursiTiketSekarang = $tiket['kursi'] - $kursi;
+            $kursiTiketSekarang = $tiket['kursi'] - intval($kursi);
             $this->tiketModel->update($id_tiket, ['kursi' => $kursiTiketSekarang]);
 
             $saldoSekarang = $user['saldo'] - $tiket['tarif'];
@@ -162,7 +162,7 @@ class Payment extends BaseController
                 'kelas' => $tiket['kelas'],
                 'tanggal' => $tiket['tanggal_berangkat'],
                 'metode_pembayaran' => $metode_pembayaran,
-                'total' => $tiket['tarif'],
+                'total' => strval(intval($tiket['tarif']) * intval($kursi)),
                 'waktu_pesan' => date('Y-m-d H:i:s'),
             ];
 

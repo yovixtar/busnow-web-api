@@ -8,7 +8,7 @@
         <label for="id_bus">Nama Bus</label>
         <select class="form-control" id="id_bus" name="id_bus" required>
             <?php foreach ($bus as $item): ?>
-                <option value="<?= $item['id_bus'] ?>"><?= $item['nama'] ?></option>
+                <option value="<?= $item['id_bus'] ?>"><?= $item['nama'] . '  -  ' . $item['kursi'] .' Kursi'?></option>
             <?php endforeach; ?>
         </select>
     </div>
